@@ -6,13 +6,14 @@ This chapter presents the final results from the supervised and unsupervised mod
 \section{Unsupervised models}
 
 \subsection{Scalable clustering models}
-
+\subsubsection{a. LDA with Term-Frequency (TF)}
+\subsubsection{b. K-Means with ClinicalBERT embeddings}
 Topic modeling using LDA was used for sentence embeddings to discover latent patterns in the data. Additionally, semantic clusters were made with K-Means clustering on ClinicalBERT embeddings of the data. Both these algorithms enable evaluation of the model for large amounts of the dataset. Performance was evaluated using perplexity and silhouette scores with varying different number of topic clusters (k) to circumvent the unreliability in the manually annotated dataset.
 
 Table \ref{tab:lda-kmeans-results} showcases the performance of both these algorithms.
 \begin{table}[H]
 \centering
-\caption{Perplexity and Silhouette Scores for LDA and K-Means Semantic Clustering Models on FSI Sentences Extracted from MIMIC-IV Discharge Summaries}
+\caption{LDA and K-Means: Perplexity and Silhouette Scores}
 \label{tab:lda-kmeans-results}
 \begin{tabular}{lccc}
 \toprule
@@ -51,7 +52,7 @@ In contrast, the second word cloud lacks a similarly coherent thematic focus. Wh
 
 \subsection{Rule-Based with K-Means}
 
-In this approach, a hybrid rule-based system combined with K-Means-based auto-labelling was employed to extract sentences potentially containing functional status information (FSI). The results presented below reflect outcomes from manual inspection and contextual analysis of the labelled outputs.
+In this approach, a hybrid rule-based system combined with KMeans-based auto-labelling was employed to extract sentences potentially containing functional status information (FSI). The results presented below reflect outcomes from manual inspection and contextual analysis of the labelled outputs.
 
 \begin{table}[H]
 \centering
@@ -118,13 +119,11 @@ COM/COG & High & Minimal ambiguity \\
 
 \paragraph{Communication and Cognition:} Despite being the category with the lowest number of sentences labelled, COM/COG showed high precision. This is likely due to the well-defined keywords list, which includes words such as \textit{speaking, reading, thinking, etc.}, which co-occur with clinically meaningful context and are picked up well by the model.
 
-\vspace{1em}
-
 \section{Supervised}
 
 \subsection{CNN-RNN}
 
-The CNN-RNN model achieved a micro-F1 score of \textbf{0.7403} and a macro-F1 score of \textbf{0.7294}. Detailed results for each class are presented in Table~\ref{tab:supervised-results}, including the true positives, true negatives, false positives and false negatives for all four domains.
+The CNN-RNN model achieved a micro-F1 score of \textbf{0.7403} and a macro-F1 score of \textbf{0.7294}. Per-class metrics are reported in Table~\ref{tab:supervised-results}.
 
 \begin{table}[H]
 \centering
@@ -135,14 +134,12 @@ The CNN-RNN model achieved a micro-F1 score of \textbf{0.7403} and a macro-F1 sc
 \textbf{ICF Domain} & \textbf{TN} & \textbf{FP} & \textbf{FN} & \textbf{TP} & \textbf{Precision} & \textbf{Recall} \\ 
 \midrule
 Mobility & 870 & 45 & 49 & 207 & 0.8214 & 0.8086\\[0.5ex]
-Self-care/Domestic Life & 903 & 36 & 74 & 158 & 0.8144 & 0.6810\\[0.5ex]
-Interpersonal Interactions & 954 & 49 & 61 & 107 & 0.6859 & 0.6369\\[0.5ex]
+Self-care/Domestic life & 903 & 36 & 74 & 158 & 0.8144 & 0.6810\\[0.5ex]
+Interpersonal interactions & 954 & 49 & 61 & 107 & 0.6859 & 0.6369\\[0.5ex]
 Communication/Cognition & 965 & 34 & 61 & 111 & 0.7655 & 0.6453\\ 
 \bottomrule
 \end{tabular}
 \end{table}
-
-Note that sentences not labeled with any of the four ICF categories were assigned a label of 0 and included in the ‘full dataset’ to reflect real-world class imbalance.
 
 \begin{figure}[H]
 \centering
@@ -150,8 +147,6 @@ Note that sentences not labeled with any of the four ICF categories were assigne
 \caption{Confusion Matrix for the CNN-RNN Model}
 \label{fig:cnn-rnn-confusion-matrix}
 \end{figure}
-
-As shown in Fig. \ref{fig:cnn-rnn-confusion-matrix}, the CNN-RNN model achieves strong classification for Mobility but struggles slightly with IPIR, evidenced by higher false negatives.
 
 \begin{figure}[H]
 \centering
@@ -170,12 +165,10 @@ As shown in Fig. \ref{fig:cnn-rnn-confusion-matrix}, the CNN-RNN model achieves 
 \end{minipage}
 \end{figure}
 
-Fig. \ref{fig:cnn-rnn-learning-curve-f1} and Fig. \ref{fig:cnn-rnn-learning-curve-loss} show the learning curves for the CNN-RNN hybrid model, these curves show the training and validation F1 Score and loss over nine epochs, since early stopping was triggered.
-
 \vspace{1em} 
 \subsection{FNN}
 
-The FNN model reached a micro-F1 score of \textbf{0.6713} and macro-F1 score of \textbf{0.6611}. Detailed results for each class are presented in Table~\ref{tab:fnn-results}, including the true positives, true negatives, false positives and false negatives for all four domains.
+The FNN model reached a micro-F1 score of \textbf{0.6713} and macro-F1 score of \textbf{0.6611}. Detailed results for each class are presented in Table~\ref{tab:fnn-results}.
 
 \begin{table}[H]
 \centering
@@ -186,8 +179,8 @@ The FNN model reached a micro-F1 score of \textbf{0.6713} and macro-F1 score of 
 \textbf{ICF Domain} & \textbf{TN} & \textbf{FP} & \textbf{FN} & \textbf{TP} & \textbf{Precision} & \textbf{Recall} \\ 
 \midrule
 Mobility & 854 & 61 & 75 & 181 & 0.7479 & 0.7070 \\
-Self-care/Domestic Life & 872 & 67 & 76 & 156 & 0.6996 & 0.6724 \\
-Interpersonal Interactions & 952 & 51 & 71 & 97 & 0.6554 & 0.5774 \\
+Self-care/Domestic life & 872 & 67 & 76 & 156 & 0.6996 & 0.6724 \\
+Interpersonal interactions & 952 & 51 & 71 & 97 & 0.6554 & 0.5774 \\
 Communication/Cognition & 963 & 36 & 79 & 93 & 0.7209 & 0.5407 \\
 \bottomrule
 \end{tabular}
@@ -199,8 +192,6 @@ Communication/Cognition & 963 & 36 & 79 & 93 & 0.7209 & 0.5407 \\
 \caption{Confusion Matrix for the FNN Model}
 \label{fig:fnn-confusion}
 \end{figure}
-
-As shown in Fig. \ref{fig:fnn-confusion}, like the CNN-RNN model, the FNN model achieves strong classification for Mobility but struggles slightly with IPIR, evidenced by higher false negatives.
 
 \begin{figure}[H]
 \centering
@@ -219,8 +210,6 @@ As shown in Fig. \ref{fig:fnn-confusion}, like the CNN-RNN model, the FNN model 
 \end{minipage}
 \end{figure}
 
-Fig. \ref{fig:fnn-f1} and Fig. \ref{fig:fnn-loss} show the learning curves for the FNN model, these curves show the training and validation F1 Score and loss over sixteen epochs, since early stopping was triggered.
-
 \subsection*{Additional Models Considered}
 
-In addition to the CNN-RNN and FNN models, a Random Forest classifier was also used. However, due to its underperformance and lack of generalizability, we omit detailed results for the Random Forest model.
+In addition to the CNN-RNN and FNN models a Random Forest classifier was also used. However, due to its underperformance and lack of generalizability, we omit detailed results for the Random Forest model.

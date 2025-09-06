@@ -24,7 +24,7 @@ The text preprocessing pipeline includes the following steps:
 The cleaned sentences are compiled into a structured tabular format, suitable for downstream machine learning tasks and manual annotation workflows for both supervised and unsupervised models.
 
  
-\section{Design of Unsupervised Models}
+\section{Design of Unsupervised models}
 
 \subsection{LDA with TF and K-Means with ClinicalBERT}
 
@@ -36,7 +36,7 @@ To retain semantic meaning in clustering discharge summary sentences, two approa
     \item \textbf{K-Means with ClinicalBERT:} ClinicalBERT embeddings provide context-aware representations tailored to medical language. Applying K-Means to these embeddings enables unsupervised grouping of semantically similar sentences, even when they differ in wording. ClinicalBERT was selected for its domain-specific training on clinical notes, thereby making clusters based on the semantic relevance of text-processed tokens.
 \end{itemize}
 
-Using both methodologies provides complementary perspectives, LDA captures latent topic structures through word co-occurrence patterns, while the ClinicalBERT with K-Means clustering captures semantic similarity using contextual embeddings. This dual approach allows for a comparative analysis of clustering quality and interpretability. Both of these approaches were implemented with scalable python frameworks such as PySpark to enable the algorithms to run on High Performance Computing (HPC)\footnote{The relevant code for scalable clustering models can be found here: \url{https://github.com/twinzies/fsi-nlp} and also at \url{https://github.com/AlessandroPerelli/com6911-teamdn1/tree/main/unsupervised_model/fsi-nlp} This complements the code that can be run on limited computational resources such as a PC: \url{https://github.com/AlessandroPerelli/com6911-teamdn1/tree/main/unsupervised_model/kmeans-ClinicalBERT}} \medskip
+Using both methodologies provides complementary perspectives, LDA captures latent topic structures through word co-occurrence patterns, while the ClinicalBERT with Kmeans clustering captures semantic similarity using contextual embeddings. This dual approach allows for a comparative analysis of clustering quality and interpretability. Both of these approaches were implemented with scalable python frameworks such as PySpark to enable the algorithms to run on High Performance Computing (HPC)\footnote{The relevant code for scalable clustering models can be found here: \url{https://github.com/twinzies/fsi-nlp} and also at \url{https://github.com/AlessandroPerelli/com6911-teamdn1/tree/main/unsupervised_model/fsi-nlp} This complements the code that can be run on limited computational resources such as a PC: \url{https://github.com/AlessandroPerelli/com6911-teamdn1/tree/main/unsupervised_model/kmeans-ClinicalBERT}} \medskip
 
 
 In the LDA approach, bag-of-words and term frequency representations were used to generate topic distributions. For the K-Means approach, word-level embeddings were generated using ClinicalBERT. These embeddings enabled the clustering of semantically similar sentences. Both methods were compared with traditional feature extraction techniques to evaluate their effectiveness. The probabilistic formulation of LDA is given by the following generative process.
@@ -86,7 +86,7 @@ $\mu_i$ = centroid of cluster $i$, computed as:
 This two-staged hybrid approach enabled both high-confidence initial annotation through manually derived rules and broader semantic generalization through unsupervised clustering. While the approach was highly effective and did as expected in capturing structured FSI- related content– particularly in categories such as Mobility and Communication \& Cognition, which presented higher precision – manual inspection revealed challenges and difficulties faced by the model in categories like IPIR and SC/DL, where key-word based rules and embedding similarity often struggled with contextual ambiguity. Nevertheless, the combination of rule-based and clustering based components provided a flexible, interpretable framework for early-stage annotation of FSI statements in low-resource settings
 
  
-\section{Design of Supervised Models}
+\section{Design of Supervised models}
 
 \subsection{Annotations}
 
@@ -131,21 +131,19 @@ The final model we implemented is a Random Forest classifier using a hybrid mode
 \section{Evaluation}
 
 % Evaluated with micro-F1 because of the imbalanced classes. 
-\subsection{Unsupervised Models}
+\subsection*{Unsupervised Models}
 
 Due to the lack of reliable ground truth labels for most of the dataset, we evaluate unsupervised models using a combination of cluster performance metrics—such as silhouette scores and perplexity—and qualitative methods including visual inspection and topic exploration through word clouds. All unsupervised algorithms are developed using PySpark to ensure scalability and are executed on a high-performance computing (HPC) environment to efficiently process large volumes of text data.\medskip
 
-While evaluation metrics such as Gini Impurity Index and accuracy were initially considered to assess cluster purity and classification performance, they were ultimately deemed unsuitable for this approach of the study. The primary reason was the limited reliability of the categorical labels used for evaluation, which were assigned without clinical expertise and exhibited inconsistencies upon cross-validation.
-
-\subsubsection{Scalable ClinicalBERT with K-Means Clustering}
+\subsection{Scalable ClinicalBERT with K-Means Clustering}
 
 We generate sentence embeddings using ClinicalBERT and apply K-Means clustering to group semantically similar content. We assess cluster quality using silhouette scores, which quantify how well each sentence fits within its assigned cluster relative to others. To support visual interpretation, we use dimensionality reduction techniques such as t-SNE and PCA, enabling 3D visualizations of the clustering structure. For interpretability, we construct word clouds based on the most frequent terms within each cluster to highlight the dominant themes.\medskip
 
-\subsubsection{Scalable LDA with Term Frequency}
+\subsection{Scalable LDA with Term Frequency}
 
 We implement Latent Dirichlet Allocation (LDA) on tokenized text data, following preprocessing steps including stemming, lemmatization, and stop word removal. Since LDA operates on term frequency rather than contextual embeddings, we use raw term counts as input. We evaluate model performance using perplexity scores, where lower values indicate better generalization. Additionally, we manually review the top words within each topic to assess semantic coherence and thematic relevance.
 
-\subsubsection{Rule-Based with K-Means Approach}
+\subsection{Rule-Based with K-Means Approach}
 
 Without ground truth labels, we evaluated our rule-based K-Means method using internal metrics and manual review. We assigned initial labels using handcrafted keyword dictionaries for four ICF categories, then generated BioBERT embeddings for sentence representations. Using K-Means ($k=10$), we clustered semantically similar sentences. We propagated labels within high-purity clusters (defined as those with more than 80\% of sentences sharing the same rule-based label and at least 30 samples). \\
 
@@ -156,6 +154,6 @@ For visualization, we reduced dimensions with UMAP to inspect cluster distributi
 
 We evaluated our supervised models using standard multi-label metrics: \textbf{precision}, \textbf{recall}, and \textbf{F1-score} (micro and macro averages). Accuracy is not a suitable metric for this problem due to the imbalanced classes in the dataset and therefore was not used for evaluation. Data was split 64\%/16\%/20\% (train/validation/test) with stratification to maintain label balance. A confusion matrix and learning curves for each of the neural models was also produced. \\
 
-The \textbf{CNN-RNN} model performed best overall, especially for well-performing categories like Mobility and Communication \& Cognition. Our \textbf{FNN} model was lighter and faster while remaining competitive. Both neural models used validation micro-F1 for early stopping to prevent overfitting.\\
+The \textbf{CNN-RNN} model performed best overall, especially for well-performing categories like \textit{Mobility} and \textit{Communication \& Cognition}. Our \textbf{FNN} model was lighter and faster while remaining competitive. Both neural models used validation micro-F1 for early stopping to prevent overfitting.\\
 
 Our \textbf{Random Forest} model, which used combined TF-IDF and FastText features, performed adequately for frequent labels but struggled with class imbalance and lacked the expressiveness of deep models. Without a proper test set, Random Forest evaluation relied on training data and qualitative assessment.
