@@ -1,0 +1,38 @@
+% This is a duplicate research-question section that can be used as is and incorporated into the report.
+% A short section which summarises the hypothesis or research question(s) that is addressed in the report. This should be a logical development of the preceding section, and may include a list of concrete objectives for the project.
+% Link back to the original proposal posed by Denis.
+% Lead in from literature review and link to methodology (next section).
+
+\chapter{Research Question}
+\section{Problem Landscape and the Role of NLP}
+
+In this project, we set out to investigate the feasibility of NLP models and techniques for the extraction of Functional Status Information (FSI) from free-text clinical records. As discussed in the previous section, functional status is a primary data element that offers valuable insights to clinicians. While essential for understanding the lived experience of health, its extraction is highly complex due to its inconsistent expression and sparse representation in discharge summaries. \medskip
+
+No publicly available FSI datasets currently exist, adding significant complexity to the use of supervised machine learning techniques. Although detailed annotation guidelines have been developed for several functional status domains—most notably Mobility \cite{nih_mobility_guideline}—the sensitive nature of the MIMIC-IV dataset prohibits the direct use of mainstream large language models (LLMs) for this task. For instance, it is not permissible to upload this data to commercially hosted LLM APIs. Nevertheless, the publication of such guidelines by institutions like the NIH reflects a growing recognition among clinicians and healthcare researchers of the potential for NLP techniques to address this challenge.\medskip
+
+Given these constraints, researchers have begun exploring alternative methodologies that leverage recent advances in NLP while maintaining stringent data privacy protocols and regulatory compliance \cite{kumar2024gpt}. Our \textbf{primary objective} is to assess the feasibility of designing a bespoke technical infrastructure to extract, annotate, and ultimately classify FSI—with increasing precision and nuance—from unstructured clinical narratives.
+
+\section{Feasibility of Leveraging Sparse FSI in a clinical dataset for NLP models}
+\medskip
+The project explores whether a small, manually annotated subset of clinical free-text sentences can serve as a sufficient foundation for training reliable models to classify Functional Status Information (FSI) into the appropriate ICF categories.\medskip
+
+This study also examines the limitations and challenges posed by the semantic sparsity and contextual ambiguity of FSI data in real-world clinical notes, and how these factors may impact the generalisability and performance of the models developed. These concerns are addressed in further detail in the Discussion section.
+\medskip
+\section{Assessing different Modeling Approaches for FSI Classification}
+
+We aim to investigate the relative strengths, feasibility, and limitations of multiple modelling paradigms—including unsupervised clustering methods, rule-based heuristics, and supervised neural network models.\medskip
+
+Our analysis also explores the differential performance of models across the four ICF domains, identifying contributing factors such as vocabulary range, domain-specific semantic overlap, and class imbalance, and how these influence overall classification outcomes.\medskip
+
+In parallel, we pursue a methodological objective: to evaluate the practical effectiveness of recent advancements in NLP, such as the use of ClinicalBERT embeddings in scalable clustering models run on high-performance computing (HPC) systems, and the integration of pre-trained FastText embeddings within a CNN-RNN architecture for multi-label classification. The following section outlines the methodologies employed in our investigation in greater detail.
+
+\medskip
+In summary, this study seeks to answer the following research questions:
+
+\begin{enumerate}
+\item Can foundational NLP techniques and models be leveraged to design a system for extracting and classifying Functional Status Information from unstructured clinical text?
+\item What are the relative strengths and limitations of different approaches in NLP? Specifically, how do supervised and unsupervised methods differ in their performance, and how do the strengths of different models in each approach guide model selection in this context?
+\end{enumerate}
+
+The following section outlines the methodologies employed in our investigations in greater detail.
+

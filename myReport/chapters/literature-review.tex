@@ -1,0 +1,79 @@
+% This section will briefly cover the technical background to the project, and review the relevant literature. The literature review should critically assess recent and relevant papers, identifying gaps in knowledge, and linking to the project. You may wish to compare (identify similarities) and contrast (identify differences) as part of this process, as well as highlighting clear limitations associated with some papers in the literature. This section should culminate in the rationale for your project. 
+
+% What has been done on NLP analysis of FSI in the past, and how you have drawn from this literature for your project.
+
+% Comment out the lipsum[1-2] text as you fill in the sections by putting a '%' in front of it.
+
+\chapter{Background and Literature Review}
+
+\section{Introduction}
+
+Though the topic of capturing FSI from EHRs is of great importance, the previous research carried out in this area is not extensive. The search for literature involved identifying the necessary methodological steps that must be carried out in this research project and searching for literature accordingly. Keywords and phrases included: FSI, disability, EHR, sentence classification, MIMIC, clinical notes, ICF, NLP, and more. \\
+
+This literature review has been structured by methodology, split into the two main approaches taken, supervised and unsupervised techniques. It will then outline the background of this topic, annotation of the dataset, any important decisions regarding pre-processing steps, and finally, suggested models for this problem and problems of a similar nature in order to guide the pipeline used in this research project.
+
+\section{Background}
+
+\subsection{The case for capturing function in health}
+
+There is a compelling case to be made regarding the treatment of functional status as a primary data element and not just an afterthought. The paper "Broadening horizons: The case for capturing function and the role of health informatics in its use" \cite{newman-griffis2019bh} explores how, because functional outcomes reflect the cumulative impact of multiple conditions, they overcome the fragmentation caused by disease-specific metrics and correlate strongly with quality of life, resource needs and even mortality risk. The paper shows that even though most of this information already exists in free-text notes, it remains invisible to analytics. Therefore, modern informatics (especially NLP that mines narrative EHRs) can surface and standardise this data with little extra effort from clinicians. To achieve this goal, four steps were proposed:
+
+\begin{itemize}
+    \item Publish shared annotation standards and datasets
+    \item Frame common NLP tasks
+    \item Build a machine-readable ontology linking ICF concepts to clinical vocabularies
+    \item Embed routine documentation triggers in care workflows
+\end{itemize}
+
+Overall, this paper provides both the rationale and a practical roadmap for integrating functional status into population health monitoring. It provides clear reasons as to why developing such systems is so important.
+
+\section{Supervised Techniques in Natural Language Processing}
+
+\subsection{Dataset annotation}
+
+Thieu et al. \cite{thieu2017} proposed an approach to identify and structure functional status information (FSI) specific to the domain of mobility off the International Classification of Functioning, Disability, and Health (ICF) from free-text clinical records. Utilizing over 1,200 physical therapy notes from NIH Clinical Centre, the authors designed an annotation framework, distinguishing Action, Assistance, Quantification, and Score Definition. Their methodology got a curated gold-standard corpus consisting of 250 annotated notes, achieving an average F1 score of 97\% for textual span overlaps, and kappa scores ranging from 0.4 to 0.9 for attribute-level annotations. The manual annotation process is described as labour-intensive; this resource provides a foundation for future NLP-driven extraction and analysis of FSI, and demonstrates potential applicability beyond mobility to other domains within the ICF framework. \\
+
+On the other hand, to directly address the problem of having no publicly available annotated dataset, Le et al. \cite{le2023} aimed to use deep active learning to construct a gold standard annotated corpus for the mobility domain of the ICF in order to facilitate the automatic extraction and analysis of FSI in free-text clinical notes. Using the n2c2 dataset, they implemented active learning through query-by-committee sampling (using BERT and CRF models) to select the most informative sentences for human annotation. The gold-standard dataset produced was then used to retrain their mobility NER model using a variety of BERT pre-trained embeddings. An F1 score for each entity was produced, with a score of around 0.83 for the action entity in all models tested. This paper is constrained by its focus on mobility, only one of four domains from the ICF, limiting broader applicability to the other ICF categories; however, it provides justification for selecting only to look at the action entity since this is the most indicative for identifying mobility statements.
+
+\subsection{Pre-trained embeddings}
+
+Newman-Griffis et al. \cite{newman-griffis2019hare} introduced HARE, a system designed to highlight relevant information in clinical narratives using fast token-level relevance tagging and document ranking. In the model they used both static (FastText) and contextual embeddings like ELMo and BERT to extract features for each token and applied a feedforward neural network for classification. To refine the output, they implemented post-processing techniques such as threshold tuning, collapsing adjacent segments, and Viterbi smoothing. They found that FastText resulted in the best F-Score with BERT contextualised embeddings close behind. The insights provided in this paper about the different sorts of embeddings will be crucial for constructing our pipelines, with an emphasis on speed, interpretability and effective handling of imbalanced data in HARE providing strong support for the design and functionality of our model.
+
+\subsection{Supervised models}
+
+Extracting valuable information from EHRs is a problem faced by many researchers, Houssein et al. \cite{houssein2023} aimed to automatically detect 11 cardiovascular risk factors and their temporal attributes from free-text clinical notes using a stacked-embeddings deep-learning approach. They stacked BioClinical BERT embeddings with Character BERT and ran a single-layer RNN over the stacked embeddings to produce an F1 score of 93.66\% which outperformed the conditional random field (CRF) baseline previously thought to be the most advanced technique for information extraction. This method relies on having a large sample of annotated records, with no provisions for a low-resource adaptation. This research also focuses on extracting cardiovascular risk factors, not FSI information; however, as the task is of a similar nature to this project, it is still very relevant. Due to the time constraints of this project, the light-weight architecture employed in their paper provides grounding for a light-weight model to be used in this project. \\
+
+With a problem more similar to our own, Newman-Griffis \& Fosler-Lussier’s paper \cite{newman-griffis2020auto} aims to demonstrate that a weakly-supervised guideline-driven pipeline can effectively train a feed-forward neural network to map free-text sentences in clinical corpora to ICF codes, without requiring hand-annotated datasets. They found that the FNN trained on silver-labelled sentences from the mobility domain achieved a micro F1 score of 0.74 substantially outperforming both rule-based and classical ML baseline models (SVM, random forest). They theorised that although the model was tested on the mobility domain, the same model could be applied to the other ICF domains. Though the feed-forward network performed the best out of the tested models, it may have struggled to learn more complex patterns or relationships that a CNN, RNN or Transformer could model. The problem set out in this paper is slightly different from the problem faced in our research however, this paper still provides support for the implementation of a FNN model for our problem and the potential for extension to a deeper neural network that could further improve the F1 score.
+
+\section{Unsupervised Techniques in Natural Language Processing}
+
+\subsection{Latent Dirichlet Allocation (LDA)}
+
+Latent Dirichlet Allocation (LDA), a probabilistic generative model introduced by Blei et al. \cite{blei2003}, has become a foundational technique for uncovering latent semantic structures in large-scale textual datasets. Its ability to model documents as mixtures of latent topics, each represented as distributions over words, makes it particularly well-suited for analyzing unstructured clinical narratives, such as those found in the MIMIC-IV database. \\
+
+LDA has been widely applied in various domains, including digital health and mental health informatics, where it facilitates the extraction of thematic patterns from user-generated content. For example, Low et al. \cite{low2020} utilized LDA to identify emerging discourse trends in digital mental health support groups during the COVID-19 pandemic. These applications demonstrate LDA’s effectiveness in extracting latent structure from noisy, health-related text—a task analogous to modelling the complex linguistic features of discharge summaries. \\
+
+In the clinical context, discharge summaries provide rich, narrative records and are written by healthcare providers to document diagnoses, treatments, clinical decisions, and patient outcomes. However, the lack of explicit structure and annotation in these texts poses challenges for large-scale information extraction and downstream classification. LDA offers a potential solution by clustering documents based on thematic similarity, which can serve as a preliminary step in annotation pipelines. \\
+
+Note that while LDA is a powerful tool for uncovering latent topics in raw textual data, it operates under assumptions that are incompatible with the nature of ClinicalBERT embeddings. \\
+
+LDA requires input in the form of discrete term-document frequency matrices, such as bag-of-words or TF-IDF representations, where each document is a probabilistic mixture of topics, and each topic is a distribution over words. This framework is well-suited for count-based, sparse data.
+
+\subsection{K-Means clustering}
+The integration of transformer-based models with clustering algorithms has significantly advanced the analysis of unstructured clinical text. ClinicalBERT, a domain-specific adaptation of BERT fine-tuned on clinical notes, captures the nuanced language of medical documentation more effectively than general purpose models. \\
+
+When ClinicalBERT embeddings are subjected to K-Means clustering, they facilitate the grouping of semantically similar discharge summaries, unveiling latent structures and common themes within the data. A notable study by Huang et al. \cite{huang2019} utilized ClinicalBERT to model clinical notes and predict hospital readmissions, showcasing the model's capability in understanding complex clinical language. \\
+
+In order to facilitate this second clustering approach a hybrid methodology to label FSI categories from clinical sentences, starting with a rule-based system, its structure put together from official ICF documentation \cite{CommCognitionGuideline2023, InterpersonalGuideline2023, MobilityGuideline2023, SelfCareGuideline2023}. Parallel to previous work using lexicon-based methods, this method involves creating dictionaries consisting of domain-specific phrases and keywords for each ICF domain and applying rules to ascertain relevant mentions. As described by Zheng et al. \cite{zheng2010} and executed in tools like ClinicalRegex, rule-based systems allow for clear and high interpretability, strict command over parameters, and transparency of decision making, which is of much value in clinical practice. Although such methods can struggle with range and exceptional cases, their reliability in high-confidence settings accounts for their use in early labelling \cite{hong2020}. \\
+
+To take this labelling process further and generalize the model beyond surface keywords matching, the implementation of a second component involving unsupervised clustering was considered. One of the proposed methods was to use K-Means clustering over clinically contextual sentence embeddings generated from a domain-specific BioBERT Model. This semi-supervised auto-labeling approach was derived from previous work such \cite{eisman2021, greenes2018}, who presented that layering rule-based with clustering and propagation can effectively vary range of labeled datasets in low-source clinical settings.  This strategy uses the semantic generalization of contextual embeddings with high efficiency of Rule-based methods, forming a middle-ground between accuracy and interpretability in early-set ICF annotation systems.
+
+\section{Conclusion}
+
+Overall, the literature set out above has demonstrated that FSI can be extracted from EHRs using a variety of NLP approaches. Often opting for simple feed-forward or rule-based pipelines, the previous research achieves respectable results, though often discarding word-order or syntactic information. This is something that deeper architectures, such as CNNs or RNNs, have shown promise in, but have yet to be applied to a multi-label FSI extraction problem. \\
+
+The majority of the papers focused solely on the mobility domain of the ICF framework, with no empirical testing on the other three domains, likely due to the abundance of mobility-related terms in the dataset with easily distinguishable keywords such as “walk”. The more complex language and relationships in the other domains pose a challenge to research done in this area, however, it is something that our project aims to address and will be a key focus going forward. \\
+
+Another key issue across the majority of the papers is the availability of a gold-standard labelled dataset from any of the accessible free-text clinical databases. Though this is not the focus of our research, it is a problem that will need to be considered when creating our model. \\
+
+In conclusion, though limited, the literature provides a rich methodological framework that can help guide our research and our model pipeline. Because of the complexity of the problem of FSI extraction, it can be framed in many different ways. How we approach the problem set out in our initial objective will be a key factor in determining how well we are able to get our model to perform and the outcomes and insights we will be able to extract.

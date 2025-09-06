@@ -1,0 +1,84 @@
+% Tara - Discussion and conclusions — This section should include a critical discussion of your findings, which relates them to the wider body of knowledge that you described in the literature review.
+% You should cover the significance of your results, any limitations to your approach, and outline next steps for future research. This section should culminate in your conclusions, which should link back to the research question and objectives.
+
+\chapter{Discussion and Conclusion}
+
+\section{Motivation and Context}
+
+The primary motivation behind this study was to explore how different techniques in natural language processing (NLP) — including both, supervised and unsupervised learning — can enable the extraction of Functional Status Information (FSI) from free-text clinical records, particularly in the absence of a publicly available, high-quality gold-standard dataset. The challenges inherent in this task are considerable: FSI is sparsely expressed, context-dependent, and frequently implicit in clinical text. Yet capturing this information is critical for patient-centred care and may be used for outcome prediction, as highlighted in the literature \cite{newman2019broadening}. Our project, therefore, sought to evaluate how existing methods from the NLP and health informatics literature could be applied to FSI classification across the four different ICF domains.
+
+\section{Unsupervised Approaches: Significance of Results}
+
+Unsupervised learning played a foundational role in exploring thematic structures within discharge summaries from the MIMIC-IV dataset. In the absence of reliable labels, models such as LDA and K-Means clustering were used to uncover latent semantic groupings. \medskip
+
+The \textbf{LDA with Term-Frequency and K-Means with ClinicalBERT embedding} clusters revealed that meaningful topic separation is feasible as an initial step in identifying topics within this high volume unlabelled data. Silhouette scores for the K-means model stabilised around 0.72 for four- and five-topic models. These results suggest the presence of underlying structure in FSI-related sentences, in line with earlier findings in thematic modelling of medical narratives \cite{low2020nlp}. 
+Perhaps owing to the bag-of-words representation, LDA clusters could not capture deeper contextual meanings required for nuanced functional classification.
+\medskip
+
+In contrast, \textbf{K-Means clustering with ClinicalBERT embeddings} provided more
+
+semantically meaningful groupings for two of the categories. For example, in the
+Communication and Cognition domain, 80\% of the manually inspected labels matched the cluster-assigned label, and in Mobility, this figure was 70\%. Sentences pertaining to more abstract domains such as Interpersonal Interactions and Self-care/Domestic Life were not notably grouped together in clusters, pointing to the limits of unsupervised methods in performance across the categories.
+\medskip
+
+The unsupervised pipeline offers a \textbf{valuable early-stage framework} for segregating the large dataset into meaningful groups, particularly in low-resource settings. It is significant that such a method could yield a relatively robust performance in some domains - it can minimize the need for manual supervision and analysis of discharge summaries. Valuable insights emerged from the clustering approaches which may be applicable for the development of initial training datasets for downstream NLP tasks—for instance, identifying which ICF categories may require more nuanced handling during annotation efforts. 
+
+\section{Supervised Approaches: Significance of Results}
+
+Supervised learning, supported by a manually annotated silver-standard dataset, formed the second core methodology investigated in the project. Three models were evaluated: a CNN-RNN hybrid, a Feedforward Neural Network (FNN), and a Random Forest classifier.
+\medskip
+
+A hybrid \textbf{CNN-RNN model} achieved the highest overall performance when considering the evaluation with a micro-F1 score of 0.74 and macro-F1 of 0.73. This is attributed to the possibility that a recurrent structure enabled it to capture sequential and syntactic nuances in clinical sentences. The ICF category labels were predicted with intriguingly high precision (0.82), recall (0.81) and F1 scores. These findings are encouraging and suggest that further investigation into the application of these techniques for functional status information extraction is both justified and warranted. Nonetheless, these results must be interpreted with some caution due to the absence of high-quality ground truth labeled data.
+\medskip
+
+The \textbf{FNN}, although simpler, achieved a respectable micro-F1 of 0.67. This model's lower complexity and faster training time make it suitable for environments with limited computational resources, despite its inability to model complex sentence structures. 
+\medskip
+
+The \textbf{Random Forest classifier}, leveraging a hybrid feature set of TF-IDF and FastText embeddings, exhibited comparatively lower performance, underscoring the potential advantages of employing more advanced NLP techniques in this domain.
+\medskip
+
+The significance of these results lies in their demonstration that supervised learning is feasible for multi-label classification of FSI even with modestly sized and imperfectly annotated training data. The supervised classification models further confirm that despite annotation challenges, supervised pipelines can operationalise ICF-based classification in a scalable manner.
+
+\section{Limitations}
+
+Despite promising results, this project is constrained by several notable limitations:
+
+\subsection{Annotation Quality}
+
+The most critical limitation was \textbf{the quality and consistency of the annotated dataset}. Albeit considerable effort was made to manually annotate a representative sample of sentences, a high percentage of annotations were later found to be inconsistent or ambiguous upon cross-validation. The absence of medically trained annotators and the subjective nature of functional status language further undermines the reliability of the dataset. This annotation noise had a twofold impact: the compromised annotation quality not only impacted the reliability of supervised model training but also precluded the use of conventional classification metrics—such as accuracy—for evaluating unsupervised outputs. To uphold methodological rigor, evaluation was instead conducted using perplexity and silhouette scores, complemented by systematic manual error analysis.
+
+\subsection{Evaluation Metrics for Unsupervised Learning}
+
+Due to the absence of trustworthy ground truth labels for the majority of the corpus, unsupervised methods were evaluated using perplexity and silhouette scores. While these metrics are valid for assessing intra-cluster cohesion and topic coherence, they do not reflect classification accuracy. Accordingly, the evaluation of clustering methods remains inherently indirect and highlights the need for validation against expert-annotated benchmark datasets in future research.
+
+\subsection{Domain and Data Coverage}
+
+The dataset was restricted to four ICF domains and our models were trained solely on ICU discharge summaries from a U.S.-based institution, which may limit generalizability to other clinical contexts, such as primary care or the NHS in the UK.
+
+\section{Topics for Future Research}
+
+This project opens up several important avenues for future research that align closely with the original research questions and objectives.
+
+\subsection{Development of a Gold-Standard Dataset}
+
+Future work must prioritise the creation of a gold-standard annotated corpus, developed in close collaboration with domain experts. Annotation guidelines provide a solid foundation, need to be complemented with multiple rounds of feedback and inter-annotator agreement analysis. A high-quality, publicly available gold dataset would not only enable rigorous technological advancement but also catalyse further research in this space.
+
+\subsection{Improving Annotation Workflows}
+
+To address the challenge of annotation burden, semi-supervised approaches like active learning can be used to identify high-value sentences for manual review. With the time constraints, it was not possible to implement an active learning technique as set out in  Le et al.’s 2023 paper \cite{le2023}, though this would have provided a more accurately labelled dataset. It is a complicated technique that is unfamiliar to the group, so it would take a long time to implement and still requires domain experts to achieve an actual gold-standard labelled dataset. Another solution to fix the problem of having no annotated dataset would be to have employed Newman-Griffis and Fosler-Lussier’s method \cite{newman-griffis2020auto} of using a weakly supervised model based on the ICF guidelines rather than having to create a labelled dataset, though the F1-Score achieved using this method was similar to our best model’s performance.
+
+\subsection{Longitudinal Modelling of Functional Status}
+
+The current work treats each sentence in isolation. However, functional status is inherently temporal and contextual. Future models could integrate longitudinal data from EHRs—such as change over time or response to treatment—using time-aware models or graph neural networks. This would enable more dynamic and predictive FSI extraction pipelines.
+
+\subsection{Interpretability and Clinical Utility}
+
+To ensure real-world adoption, future models may wish to ensure interpretability. Interpretability of technical models is essential for real-world adoption because it builds clinician trust and supports accountability and an understanding of why models are effective. Doctors are more likely to embrace NLP-based applications if they can see why it makes a classification and what might lead to errors, which can in turn satisfy regulatory expectations for transparency and reliability.
+
+\section{Conclusion}
+
+This project has demonstrated that functional status information—though sparse and contextually complex—can be extracted from free-text clinical notes using a combination of supervised and unsupervised learning techniques in natural language processing. Our unsupervised pipeline provided valuable thematic insights and a mechanism for scalable early-stage labeling, while our supervised models validate the hypothesis that even noisy, silver-standard annotations can support effective multi-label classification in this context.
+\medskip
+These findings directly address the core research questions the team sought to investigate, confirming that both approaches are viable for early-stage FSI extraction from discharge summaries and its classification. Both techniques have much to offer to organizations and researchers interested in its analyses and in leading annotation efforts. That being said, current limitations in annotation quality and domain coverage necessitate caution in the interpretation of performance evaluations and underscore the need for continued and methodological development of the application of these techniques.\medskip
+
+Ultimately, this work contributes to a growing body of literature that seeks to bridge the gap between narrative clinical documents and structured, actionable data—an endeavour that is crucial for enabling advanced patient-centred care and clinical decision support in healthcare systems of the future.

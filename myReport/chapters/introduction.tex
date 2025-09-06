@@ -1,0 +1,34 @@
+% Introduction — This section should set the scene for the project, describing the context and ‘big picture’ first, before focusing down on the specific questions that were addressed in the project.
+
+% Comment out the lipsum[1-2] text as you fill in the sections by putting a '%' in front of it.
+\chapter{Introduction}
+
+Electronic health records (EHRs) capture large amounts of diagnostic codes, laboratory results and imaging reports. Yet, they still tell us surprisingly little about how patients actually live their lives. 
+Decades of studies show that functional status information (FSI) is critical for predicting quality of life, service needs and outcomes such as readmission or mortality. FSI refers to statements that describe what a person can actually do, such as walking to the bathroom unaided or preparing a simple meal. The World Health Organisation's International Classification of Functioning, Disability and Health (ICF) describes functional status as the lived interaction between health conditions, body structures, activities, participation and contextual factors, showing its centrality to truly patient-centred care. By focusing on whole-person performance rather than isolated impairments, FSI offers a genuinely patient-centred lens on health and doesn't just focus on whether the heart is functioning or a lab value is normal for example, but whether the individual can return to work, live independently and engage meaningfully with family and society. \\
+
+Unfortunately, FSI is a needle in the clinical-text haystack. It is buried in narrative notes and expressed with highly variable language ("walks with a stick", "mobilised 20m independently" etc.). The absence of publicly available, labelled corpora has left traditional NLP approaches ineffective, which has constrained progress in this area of health informatics. Recent annotation projects have begun to define strict guidelines for the following categories:
+
+\begin{itemize}
+    \item Mobility - this includes things like moving the whole body from place to place (walking, climbing stairs, getting in and out of a car etc.) It also refers to the use of mobility aids (canes, walkers, wheelchairs etc.).
+    \item Self-care and Domestic Life (SC/DL) - this includes personal activities of daily living (ADLs) such as bathing, dressing, eating etc. It also includes instrumental tasks (such as cooking, cleaning, shopping etc.) and safety and environmental management (using kitchen appliances, handling emergencies at home etc.).
+    \item Interpersonal Interactions and Relationships (IPIR) - this includes initiating and sustaining relationships (such as family roles, friendships intimate partnerships etc.). It also involved cooperating with others in shared activities (coordinating appointments, caregiving, teamwork etc.) and social behaviours and norms (expressing emotions appropriately, resolving conflict, seeking assistance etc.)
+    \item Communication and Cognition (Com/Cog) - this includes receptive and expression communication (like understanding spoken or written language, speaking clearly, writing and using assistive communication devices). It also contains higher cognitive functions (like memory, orientation, planning etc.) and conversation skills (like taking turns, staying on topic, using non-verbal cues etc.).
+\end{itemize}
+
+Using different NLP approaches, our project aims to automatically classify sentences from free-text clinical notes (from the MIMIC-IV dataset) into the four ICF activity domains. We have identified this task as a multi-label, multi-class sentence classification problem, where each sentence can belong to one or more of the categories mentioned by the ICF. \\
+
+To support supervised learning, we manually annotated a representative subset of MIMIC-IV discharge summaries by hand, creating a silver standard. We could not use the gold standard created in the paper "Inductive identification of functional status information and establishing a gold
+standard corpus" \cite{thieu2017} due to it not being publicly released yet (something which seems less and less likely due to the ongoing academic situation in the US) and therefore had to manually annotate this data ourselves. \\
+
+Having established this silver standard, we pursued two modelling approaches. Unsupervised learning was useful because a large, expertly annotated gold standard simply does not exist for function status (or at least, not a public one as mentioned before). Therefore, letting the data organise itself exposes the latent themes that recur across notes without requiring clinicians to label every sentence. Such themes can be modelled either:
+
+\begin{itemize}
+    \item Probabilistically - with term-frequency Latent Dirichlet Allocation (LDA)
+    \item Geometrically - by clustering dense semantic embeddings from a language model such as ClinicalBERT.
+\end{itemize}
+
+In practice, the embedding-based clusters capture functional nuance far better than the bag-of-words topics. Unsupervised approaches can effectively provide a subset from a larger dataset and work as a sieve for annotators looking to create a labelled dataset to train a supervised model on. \\
+
+In comparison, supervised learning is the natural choice once a dataset has been labelled because the task then becomes multi-label topic classification, that is given a sentence, decide which ICF domains it conveys. Yet this is still far from trivial. Functional status language is notoriously varied and complex. With ambiguous sentences and cryptic abbreviations, a model must generalise effectively across all this. Sophisticated architectures must be implemented in order to fully capture meaning, as well as a high volume of accurately manually annotated data. Where those hurdles are overcome, supervised learning provides the precise and dependable decision boundaries needed for accurate and reliable classification. \\
+
+The next chapter looks at the existing literature on extracting functional status information from clinical text. Particular attention is paid to why capturing function in health is so important, the current dataset annotation and pre-trained embeddings and current work on supervised and unsupervised models for this task.
